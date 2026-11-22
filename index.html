@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>محول الصيغ · Format Factory</title>
+  <meta name="description" content="Convert images, audio and video right in your browser. Files never leave your device.">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Format Factory">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="icons/icon.svg" alt="" width="36" height="36">
+      <div>
+        <h1 data-i18n="appName">محول الصيغ</h1>
+        <p class="tagline" data-i18n="tagline">حوّل الصور والصوت والفيديو داخل جهازك</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="installBtn" class="btn btn-ghost" hidden data-i18n="install">تثبيت التطبيق</button>
+      <button id="langBtn" class="btn btn-ghost" aria-label="Change language">English</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="dropZone" class="drop" tabindex="0" role="button" aria-describedby="dropHint">
+      <svg class="drop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p class="drop-title" data-i18n="dropTitle">اسحب الملفات هنا أو اضغط للاختيار</p>
+      <p id="dropHint" class="drop-hint" data-i18n="dropHint">صور، صوت، فيديو · ملفاتك لا تغادر جهازك</p>
+      <input id="fileInput" type="file" multiple accept="image/*,audio/*,video/*" hidden>
+    </section>
+
+    <section id="panel" class="panel" hidden>
+      <div class="panel-head">
+        <h2><span data-i18n="files">الملفات</span> <span id="count" class="count">0</span></h2>
+        <button id="clearBtn" class="btn btn-link" data-i18n="clear">مسح الكل</button>
+      </div>
+      <ul id="fileList" class="files"></ul>
+
+      <div class="convert-row">
+        <label for="formatSelect" data-i18n="convertTo">تحويل إلى</label>
+        <select id="formatSelect"></select>
+        <button id="convertBtn" class="btn btn-primary" disabled data-i18n="convert">تحويل</button>
+      </div>
+      <p class="soon" data-i18n="soon">التحويل قادم في التحديث القادم. هذه نسخة الواجهة فقط.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p data-i18n="privacy">يعمل بالكامل داخل المتصفح، بدون خوادم وبدون رفع ملفات.</p>
+    <p id="offlineNote" class="ok" hidden data-i18n="offlineReady">جاهز للعمل بدون إنترنت</p>
+  </footer>
+
+  <div id="iosTip" class="ios-tip" hidden>
+    <span data-i18n="iosTip">للتثبيت على iPhone: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»</span>
+    <button id="iosTipClose" class="btn btn-link" aria-label="Close">✕</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
