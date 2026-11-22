@@ -1,10 +1,12 @@
 // Bump VERSION whenever app files change so phones pick up the update.
-const VERSION = 'ff-v1';
+const VERSION = 'ff-v2';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './js/zip.js',
+  './js/image.js',
   './manifest.webmanifest',
   './icons/icon.svg',
   './icons/icon-192.png',
@@ -26,6 +28,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// lib/heic2any.min.js (1.3 MB) is cached on first use, not up front.
 // Network first for pages (fresh updates), cache first for everything else.
 self.addEventListener('fetch', (event) => {
   const req = event.request;

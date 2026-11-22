@@ -7,7 +7,7 @@ A free file converter for images, audio and video that runs entirely in the brow
 ## Status
 
 - [x] Step 1: app shell (Arabic/English, drag and drop, installable, offline)
-- [ ] Step 2: image conversion (JPG, PNG, WebP, AVIF)
+- [x] Step 2: image conversion (JPG, PNG, WebP, AVIF where the browser supports it), resize, max file size, presets, iPhone HEIC photos, download all as ZIP
 - [ ] Step 3: audio and video conversion (ffmpeg.wasm)
 - [ ] Step 4: batch conversion and polish
 
@@ -33,3 +33,7 @@ Settings → Pages → *Deploy from a branch* → `main` / `(root)`.
 ## Updating
 
 When you change app files, bump `VERSION` in `sw.js` so installed copies pick up the new version.
+
+## Credits
+
+- iPhone HEIC photos are decoded with [heic2any](https://github.com/alexcorvi/heic2any) (MIT, see `lib/heic2any.LICENSE.txt`). It loads only when a HEIC file needs it.

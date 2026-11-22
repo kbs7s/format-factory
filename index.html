@@ -36,7 +36,7 @@
       <svg class="drop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <p class="drop-title" data-i18n="dropTitle">اسحب الملفات هنا أو اضغط للاختيار</p>
       <p id="dropHint" class="drop-hint" data-i18n="dropHint">صور، صوت، فيديو · ملفاتك لا تغادر جهازك</p>
-      <input id="fileInput" type="file" multiple accept="image/*,audio/*,video/*" hidden>
+      <input id="fileInput" type="file" multiple accept="image/*,audio/*,video/*,.heic,.heif" hidden>
     </section>
 
     <section id="panel" class="panel" hidden>
@@ -46,12 +46,41 @@
       </div>
       <ul id="fileList" class="files"></ul>
 
-      <div class="convert-row">
-        <label for="formatSelect" data-i18n="convertTo">تحويل إلى</label>
-        <select id="formatSelect"></select>
-        <button id="convertBtn" class="btn btn-primary" disabled data-i18n="convert">تحويل</button>
+      <div id="imgOptions" class="options" hidden>
+        <h3 data-i18n="imageSettings">إعدادات الصور</h3>
+        <div class="field">
+          <label for="presetSelect" data-i18n="preset">جاهز</label>
+          <select id="presetSelect"></select>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label for="formatSelect" data-i18n="convertTo">تحويل إلى</label>
+            <select id="formatSelect"></select>
+          </div>
+          <div class="field">
+            <label for="sizeSelect" data-i18n="maxSide">أقصى أبعاد</label>
+            <select id="sizeSelect"></select>
+          </div>
+          <div class="field" id="qualityField">
+            <label for="quality"><span data-i18n="quality">الجودة</span> <output id="qualityOut">80</output>%</label>
+            <input id="quality" type="range" min="10" max="100" step="5" value="80">
+          </div>
+          <div class="field" id="targetField">
+            <label for="targetSelect" data-i18n="targetSize">حجم الملف الأقصى</label>
+            <select id="targetSelect"></select>
+          </div>
+        </div>
+        <label class="check"><input id="squareCrop" type="checkbox"> <span data-i18n="square">قص مربع (1:1)</span></label>
+        <p id="formatNote" class="soon" hidden></p>
       </div>
-      <p class="soon" data-i18n="soon">التحويل قادم في التحديث القادم. هذه نسخة الواجهة فقط.</p>
+
+      <p id="avNote" class="soon" hidden data-i18n="avSoon">تحويل الصوت والفيديو قادم في التحديث القادم.</p>
+
+      <div class="convert-row">
+        <button id="convertBtn" class="btn btn-primary" disabled data-i18n="convert">تحويل</button>
+        <button id="zipBtn" class="btn btn-ghost" hidden data-i18n="downloadZip">تنزيل الكل (ZIP)</button>
+      </div>
+      <p id="summary" class="summary" hidden></p>
     </section>
   </main>
 
@@ -65,6 +94,8 @@
     <button id="iosTipClose" class="btn btn-link" aria-label="Close">✕</button>
   </div>
 
+  <script src="js/zip.js"></script>
+  <script src="js/image.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
