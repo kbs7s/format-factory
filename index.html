@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -14,126 +14,387 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Format Factory">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>try{var th=localStorage.getItem('ffTheme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=th;}catch(e){}</script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <img src="icons/icon.svg" alt="" width="36" height="36">
-      <div>
-        <h1 data-i18n="appName">محول الصيغ</h1>
-        <p class="tagline" data-i18n="tagline">حوّل الصور والصوت والفيديو داخل جهازك</p>
-      </div>
-    </div>
-    <div class="actions">
-      <button id="installBtn" class="btn btn-ghost" hidden data-i18n="install">تثبيت التطبيق</button>
-      <button id="langBtn" class="btn btn-ghost" aria-label="Change language">English</button>
-    </div>
-  </header>
-
-  <main>
-    <section id="dropZone" class="drop" tabindex="0" role="button" aria-describedby="dropHint">
-      <svg class="drop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <p class="drop-title" data-i18n="dropTitle">اسحب الملفات هنا أو اضغط للاختيار</p>
-      <p id="dropHint" class="drop-hint" data-i18n="dropHint">صور، صوت، فيديو · ملفاتك لا تغادر جهازك</p>
-      <input id="fileInput" type="file" multiple accept="image/*,audio/*,video/*,.heic,.heif" hidden>
-    </section>
-
-    <section id="panel" class="panel" hidden>
-      <div class="panel-head">
-        <h2><span data-i18n="files">الملفات</span> <span id="count" class="count">0</span></h2>
-        <button id="clearBtn" class="btn btn-link" data-i18n="clear">مسح الكل</button>
-      </div>
-      <ul id="fileList" class="files"></ul>
-
-      <div id="imgOptions" class="options" hidden>
-        <h3 data-i18n="imageSettings">إعدادات الصور</h3>
-        <div class="field">
-          <label for="presetSelect" data-i18n="preset">جاهز</label>
-          <select id="presetSelect"></select>
+  <div class="topbar-wrap">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-logo" viewBox="0 0 512 512" aria-hidden="true">
+          <defs>
+            <linearGradient id="ffGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4f46e5"/>
+              <stop offset="100%" stop-color="#0ea5e9"/>
+            </linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="118" fill="url(#ffGrad)"/>
+          <g fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M148 198h212l-54-54"/>
+            <path d="M364 314H152l54 54"/>
+          </g>
+        </svg>
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <h1 data-i18n="appName">محول الصيغ</h1>
+            <span class="badge-pill" id="privacyBadge">
+              <span class="dot"></span>
+              <span data-i18n="localBadge">محلي 100% · بدون رفع</span>
+            </span>
+          </div>
+          <p class="tagline" data-i18n="tagline">استوديو تحويل وضغط وتعديل الصور داخل جهازك</p>
         </div>
-        <div class="grid2">
-          <div class="field">
-            <label for="formatSelect" data-i18n="convertTo">تحويل إلى</label>
-            <select id="formatSelect"></select>
+      </div>
+
+      <div class="header-actions">
+        <button id="installBtn" class="btn btn-soft btn-sm" type="button" hidden data-i18n="install">تثبيت التطبيق</button>
+        <button id="themeBtn" class="btn btn-ghost btn-icon" type="button" aria-label="Toggle theme" title="Toggle theme">
+          <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden>
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+          <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <button id="langBtn" class="btn btn-ghost" type="button" aria-label="Change language">English</button>
+      </div>
+    </header>
+  </div>
+
+  <main class="studio">
+    <!-- Left Column: Drop Studio & File Queue -->
+    <div class="stage-col">
+      <section id="dropZone" class="drop" tabindex="0" role="button" aria-describedby="dropHint">
+        <div class="drop-hero-inner">
+          <div class="drop-icon-wrap">
+            <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+            </svg>
+          </div>
+          <div>
+            <p class="drop-title" data-i18n="dropTitle">اسحب الصور هنا أو اضغط للاختيار</p>
+            <p id="dropHint" class="drop-hint" data-i18n="dropHint">يدعم التحويل الدفعي، اللصق المباشر (Ctrl+V)، وصور iPhone HEIC</p>
+          </div>
+        </div>
+        <div class="drop-chips" aria-hidden="true">
+          <span class="fmt-chip">JPG</span>
+          <span class="fmt-chip">PNG</span>
+          <span class="fmt-chip">WebP</span>
+          <span class="fmt-chip">AVIF</span>
+          <span class="fmt-chip">HEIC / HEIF</span>
+          <span class="fmt-chip">GIF / SVG</span>
+          <span class="fmt-chip">MP4 / MOV / WebM</span>
+          <span class="fmt-chip">MP3 / WAV / M4A</span>
+        </div>
+        <div class="drop-actions">
+          <button id="chooseBtn" class="btn btn-soft btn-sm" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span data-i18n="chooseFiles">اختيار ملفات</span>
+          </button>
+          <button id="sampleBtn" class="btn btn-ghost btn-sm" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+            <span data-i18n="trySamples">جرّب صور تجريبية</span>
+          </button>
+        </div>
+        <input id="fileInput" type="file" multiple accept="image/*,audio/*,video/*,.heic,.heif" hidden>
+      </section>
+
+      <!-- Live Batch KPI Bar -->
+      <section id="statsGrid" class="stats-grid" hidden>
+        <div class="stat-card">
+          <p class="stat-label" data-i18n="statFiles">الملفات</p>
+          <p class="stat-value" id="statFilesVal">0</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label" data-i18n="statBefore">الحجم الأصلي</p>
+          <p class="stat-value" id="statBeforeVal">0 B</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label" data-i18n="statAfter">بعد التحويل</p>
+          <p class="stat-value accent" id="statAfterVal">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label" data-i18n="statSaved">التوفير</p>
+          <p class="stat-value ok" id="statSavedVal">—</p>
+        </div>
+      </section>
+
+      <!-- Queue Panel -->
+      <section id="queuePanel" class="card queue-panel" hidden>
+        <div class="queue-head">
+          <div class="queue-title-group">
+            <h2 data-i18n="queueTitle">قائمة الملفات</h2>
+            <span id="count" class="count-badge">0</span>
+          </div>
+          <div class="filter-tabs" role="tablist" aria-label="Filter files">
+            <button class="filter-tab active" data-filter="all" type="button" data-i18n="filterAll">الكل</button>
+            <button class="filter-tab" data-filter="pending" type="button" data-i18n="filterPending">قيد الانتظار</button>
+            <button class="filter-tab" data-filter="done" type="button" data-i18n="filterDone">مكتمل</button>
+          </div>
+          <button id="clearBtn" class="btn btn-link" type="button" data-i18n="clear">مسح الكل</button>
+        </div>
+
+        <div id="progressWrap" class="progress-wrap" hidden>
+          <div class="progress-meta">
+            <span id="progressLabel"></span>
+            <span id="progressPct">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <p id="engineStatus" class="info-banner accent" hidden></p>
+
+        <ul id="fileList" class="files"></ul>
+      </section>
+
+      <!-- Empty State Feature Highlights -->
+      <section id="featureStrip" class="features-strip">
+        <article class="feature-tile">
+          <div class="feature-tile-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3 data-i18n="feat1Title">خصوصية تامة</h3>
+          <p data-i18n="feat1Desc">تُعالج الصور محلياً داخل المتصفح مع إزالة بيانات EXIF والموقع تلقائياً.</p>
+        </article>
+        <article class="feature-tile">
+          <div class="feature-tile-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <h3 data-i18n="feat2Title">ضغط ذكي حسب الحجم</h3>
+          <p data-i18n="feat2Desc">حدّد حداً أقصى لحجم الملف (مثل 200KB أو 500KB) ليضبط الجودة والأبعاد تلقائياً.</p>
+        </article>
+        <article class="feature-tile">
+          <div class="feature-tile-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+          </div>
+          <h3 data-i18n="feat3Title">مقارنة قبل وبعد + ZIP</h3>
+          <p data-i18n="feat3Desc">عاين الفرق بسلايدر تفاعلي قبل التنزيل، أو نزّل جميع الملفات دفعة واحدة بملف ZIP.</p>
+        </article>
+      </section>
+    </div>
+
+    <!-- Right Column: Sticky Settings Inspector -->
+    <aside class="inspector-col">
+      <div class="card inspector-card">
+        <div id="imgInspector">
+        <!-- Presets -->
+        <div class="inspector-section">
+          <div class="sec-head">
+            <h2 class="sec-title" data-i18n="presetSection">إعدادات جاهزة</h2>
+            <button id="resetSettingsBtn" class="btn btn-link btn-sm" type="button" data-i18n="reset">إعادة ضبط</button>
+          </div>
+          <div id="presetGrid" class="preset-grid"></div>
+        </div>
+
+        <!-- Output Format & Quality -->
+        <div class="inspector-section">
+          <div class="sec-head">
+            <h2 class="sec-title" data-i18n="outputSection">صيغة الإخراج والجودة</h2>
           </div>
           <div class="field">
-            <label for="sizeSelect" data-i18n="maxSide">أقصى أبعاد</label>
-            <select id="sizeSelect"></select>
+            <div id="formatGroup" class="seg-group" role="radiogroup" aria-label="Output format"></div>
           </div>
+
           <div class="field" id="qualityField">
-            <label for="quality"><span data-i18n="quality">الجودة</span> <output id="qualityOut">80</output>%</label>
+            <div class="field-row">
+              <label for="quality" data-i18n="quality">الجودة</label>
+              <span class="pill pill-accent"><output id="qualityOut">80</output>% · <span id="qualityTier"></span></span>
+            </div>
             <input id="quality" type="range" min="10" max="100" step="5" value="80">
           </div>
-          <div class="field" id="targetField">
-            <label for="targetSelect" data-i18n="targetSize">حجم الملف الأقصى</label>
-            <select id="targetSelect"></select>
-          </div>
-        </div>
-        <label class="check"><input id="squareCrop" type="checkbox"> <span data-i18n="square">قص مربع (1:1)</span></label>
-        <p id="formatNote" class="soon" hidden></p>
-      </div>
 
-      <div id="avOptions" class="options" hidden>
-        <h3 data-i18n="avSettings">إعدادات الفيديو والصوت</h3>
-        <div class="field">
-          <label for="avPreset" data-i18n="preset">إعداد جاهز</label>
-          <select id="avPreset"></select>
+          <div class="field" id="bgColorField" hidden>
+            <div class="field-row">
+              <label data-i18n="jpgBg">خلفية الشفافية (JPG)</label>
+              <div class="color-row">
+                <button type="button" class="swatch active" data-bg="#ffffff" style="background:#ffffff" aria-label="White"></button>
+                <button type="button" class="swatch" data-bg="#000000" style="background:#000000" aria-label="Black"></button>
+                <button type="button" class="swatch" data-bg="#f1f5f9" style="background:#f1f5f9" aria-label="Light Gray"></button>
+                <input id="bgColorPicker" class="color-picker-input" type="color" value="#ffffff" aria-label="Custom background color">
+              </div>
+            </div>
+          </div>
+
+          <p id="formatNote" class="info-banner" hidden></p>
         </div>
-        <div class="grid2">
-          <div class="field">
-            <label for="avFormat" data-i18n="convertTo">تحويل إلى</label>
-            <select id="avFormat"></select>
-          </div>
-          <div class="field" id="resField">
-            <label for="avRes" data-i18n="resolution">الدقة</label>
-            <select id="avRes"></select>
-          </div>
-          <div class="field" id="vqField">
-            <label for="avQuality" data-i18n="quality">الجودة</label>
-            <select id="avQuality"></select>
-          </div>
-          <div class="field" id="brField">
-            <label for="avBitrate" data-i18n="bitrate">جودة الصوت</label>
-            <select id="avBitrate"></select>
+
+        <!-- Resize & Target Size -->
+        <div class="inspector-section">
+          <div class="sec-head">
+            <h2 class="sec-title" data-i18n="sizeSection">الأبعاد وحجم الملف</h2>
           </div>
           <div class="field">
-            <label for="trimStart" data-i18n="trimStart">البداية (دقيقة:ثانية)</label>
-            <input id="trimStart" type="text" inputmode="decimal" placeholder="0:00" autocomplete="off">
+            <label for="sizeSelect" data-i18n="maxSide">أقصى أبعاد (الضلع الأطول)</label>
+            <select id="sizeSelect"></select>
           </div>
           <div class="field">
-            <label for="trimEnd" data-i18n="trimEnd">النهاية (اختياري)</label>
-            <input id="trimEnd" type="text" inputmode="decimal" placeholder="—" autocomplete="off">
+            <label data-i18n="targetSize">حجم الملف الأقصى</label>
+            <div id="targetPills" class="pill-row"></div>
           </div>
         </div>
-        <label class="check" id="muteField"><input id="avMute" type="checkbox"> <span data-i18n="mute">كتم الصوت</span></label>
-        <p id="avNote" class="soon" hidden></p>
-      </div>
 
-      <p id="engineStatus" class="soon" hidden></p>
+        <!-- Transform & Naming -->
+        <div class="inspector-section">
+          <div class="sec-head">
+            <h2 class="sec-title" data-i18n="transformSection">القص والتدوير والتسمية</h2>
+          </div>
+          <div class="field">
+            <label data-i18n="cropMode">نسبة القص</label>
+            <div id="cropGroup" class="seg-group"></div>
+          </div>
+          <div class="field">
+            <div class="field-row">
+              <label data-i18n="orientation">التدوير والقلب</label>
+              <span id="transformBadge" class="pill pill-neutral" hidden></span>
+            </div>
+            <div class="transform-bar">
+              <button type="button" class="seg-btn" id="rotLeftBtn" title="Rotate 90° Left">↺ 90°</button>
+              <button type="button" class="seg-btn" id="rotRightBtn" title="Rotate 90° Right">↻ 90°</button>
+              <button type="button" class="seg-btn" id="flipHBtn" title="Flip Horizontal">⇄</button>
+              <button type="button" class="seg-btn" id="flipVBtn" title="Flip Vertical">⇅</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="suffixInput" data-i18n="fileSuffix">لاحقة اسم الملف (اختياري)</label>
+            <input id="suffixInput" type="text" maxlength="24" placeholder="-web">
+          </div>
+          <p class="info-banner soft" data-i18n="exifNote">يتم مسح بيانات EXIF وموقع GPS تلقائياً عند إعادة الترميز لحماية خصوصيتك.</p>
+        </div>
 
-      <div class="convert-row">
-        <button id="convertBtn" class="btn btn-primary" disabled data-i18n="convert">تحويل</button>
-        <button id="cancelBtn" class="btn btn-ghost" hidden data-i18n="cancel">إلغاء</button>
-        <button id="zipBtn" class="btn btn-ghost" hidden data-i18n="downloadZip">تنزيل الكل (ZIP)</button>
+        </div>
+
+        <!-- Audio / Video -->
+        <div id="avInspector" hidden>
+          <div class="inspector-section">
+            <div class="sec-head">
+              <h2 class="sec-title" data-i18n="avPresetSection">جاهز للفيديو والصوت</h2>
+            </div>
+            <div id="avPresetGrid" class="preset-grid"></div>
+          </div>
+          <div class="inspector-section">
+            <div class="sec-head">
+              <h2 class="sec-title" data-i18n="avOutputSection">صيغة الفيديو والصوت</h2>
+            </div>
+            <div class="field">
+              <p class="av-label" data-i18n="groupVideo">فيديو</p>
+              <div id="avVideoFormats" class="seg-group" role="radiogroup"></div>
+            </div>
+            <div class="field">
+              <p class="av-label" data-i18n="groupAudio">صوت</p>
+              <div id="avAudioFormats" class="seg-group" role="radiogroup"></div>
+            </div>
+            <div class="field" id="resField">
+              <label for="avRes" data-i18n="resolution">الدقة</label>
+              <select id="avRes"></select>
+            </div>
+            <div class="field" id="vqField">
+              <label data-i18n="videoQuality">جودة الفيديو</label>
+              <div id="avQualityGroup" class="seg-group"></div>
+            </div>
+            <div class="field" id="brField">
+              <label data-i18n="bitrate">جودة الصوت</label>
+              <div id="avBitratePills" class="pill-row"></div>
+            </div>
+            <p id="avNote" class="info-banner" hidden></p>
+          </div>
+          <div class="inspector-section">
+            <div class="sec-head">
+              <h2 class="sec-title" data-i18n="trimSection">القص وكتم الصوت</h2>
+            </div>
+            <div class="trim-row">
+              <div class="field">
+                <label for="trimStart" data-i18n="trimStart">البداية (دقيقة:ثانية)</label>
+                <input id="trimStart" type="text" inputmode="decimal" placeholder="0:00" autocomplete="off">
+              </div>
+              <div class="field">
+                <label for="trimEnd" data-i18n="trimEnd">النهاية (اختياري)</label>
+                <input id="trimEnd" type="text" inputmode="decimal" placeholder="—" autocomplete="off">
+              </div>
+            </div>
+            <label class="check" id="muteField"><input id="avMute" type="checkbox"> <span data-i18n="mute">كتم الصوت</span></label>
+          </div>
+        </div>
+
+        <!-- Primary Action Dock -->
+        <div class="action-dock">
+          <button id="convertBtn" class="btn btn-primary" type="button" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            <span id="convertBtnText" data-i18n="convert">تحويل الصور</span>
+          </button>
+          <button id="cancelBtn" class="btn btn-ghost" type="button" hidden data-i18n="cancel">إلغاء</button>
+          <button id="zipBtn" class="btn btn-success" type="button" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span data-i18n="downloadZip">تنزيل الكل (ZIP)</span>
+          </button>
+        </div>
       </div>
-      <p id="summary" class="summary" hidden></p>
-    </section>
+    </aside>
   </main>
 
   <footer class="foot">
-    <p data-i18n="privacy">يعمل بالكامل داخل المتصفح، بدون خوادم وبدون رفع ملفات.</p>
-    <p id="offlineNote" class="ok" hidden data-i18n="offlineReady">جاهز للعمل بدون إنترنت</p>
+    <div class="foot-inner">
+      <span data-i18n="privacy">يعمل بالكامل داخل المتصفح، بدون خوادم وبدون رفع ملفات.</span>
+      <span id="offlineNote" class="ok" hidden data-i18n="offlineReady">جاهز للعمل بدون إنترنت</span>
+      <div class="encoder-pills" id="encoderPills"></div>
+    </div>
   </footer>
+
+  <!-- Before/After Compare Modal -->
+  <div id="compareModal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="compareTitle">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="compareTitle">Compare</h3>
+        <button id="closeCompareBtn" class="btn btn-ghost btn-sm" type="button" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="compare-stage" id="compareStage">
+          <span class="compare-badge left" id="badgeBefore">Original</span>
+          <span class="compare-badge right" id="badgeAfter">Converted</span>
+          <div class="compare-layer">
+            <img id="compareImgAfter" alt="">
+          </div>
+          <div class="compare-layer" id="compareBeforeWrap" style="clip-path: inset(0 50% 0 0);">
+            <img id="compareImgBefore" alt="">
+          </div>
+          <div class="compare-divider" id="compareDivider" style="left: 50%;">
+            <div class="compare-handle">↔</div>
+          </div>
+        </div>
+        <input id="compareSlider" type="range" min="0" max="100" value="50" aria-label="Before and after split slider">
+        <div class="compare-stats">
+          <div class="compare-stat-item">
+            <span data-i18n="cmpOrig">الأصلي</span>
+            <strong id="cmpOrigVal">—</strong>
+          </div>
+          <div class="compare-stat-item">
+            <span data-i18n="cmpConv">المحول</span>
+            <strong id="cmpConvVal">—</strong>
+          </div>
+          <div class="compare-stat-item">
+            <span data-i18n="cmpDiff">الفرق</span>
+            <strong id="cmpDiffVal">—</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
 
   <div id="iosTip" class="ios-tip" hidden>
     <span data-i18n="iosTip">للتثبيت على iPhone: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»</span>
-    <button id="iosTipClose" class="btn btn-link" aria-label="Close">✕</button>
+    <button id="iosTipClose" class="btn btn-link btn-sm" type="button" aria-label="Close">✕</button>
   </div>
 
   <script src="js/zip.js"></script>
   <script src="js/image.js"></script>
   <script src="js/media.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>

@@ -1,5 +1,5 @@
 // Bump VERSION whenever app files change so phones pick up the update.
-const VERSION = 'ff-v3';
+const VERSION = 'ff-v4';
 // Big libraries (video engine ~31 MB, HEIC decoder) live in their own cache,
 // so an app update doesn't download them again. Bump only when lib/ changes.
 const LIB_CACHE = 'ff-lib-ffmpeg0.12.10-heic0.0.4';
