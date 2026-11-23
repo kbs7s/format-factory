@@ -74,10 +74,47 @@
         <p id="formatNote" class="soon" hidden></p>
       </div>
 
-      <p id="avNote" class="soon" hidden data-i18n="avSoon">تحويل الصوت والفيديو قادم في التحديث القادم.</p>
+      <div id="avOptions" class="options" hidden>
+        <h3 data-i18n="avSettings">إعدادات الفيديو والصوت</h3>
+        <div class="field">
+          <label for="avPreset" data-i18n="preset">إعداد جاهز</label>
+          <select id="avPreset"></select>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label for="avFormat" data-i18n="convertTo">تحويل إلى</label>
+            <select id="avFormat"></select>
+          </div>
+          <div class="field" id="resField">
+            <label for="avRes" data-i18n="resolution">الدقة</label>
+            <select id="avRes"></select>
+          </div>
+          <div class="field" id="vqField">
+            <label for="avQuality" data-i18n="quality">الجودة</label>
+            <select id="avQuality"></select>
+          </div>
+          <div class="field" id="brField">
+            <label for="avBitrate" data-i18n="bitrate">جودة الصوت</label>
+            <select id="avBitrate"></select>
+          </div>
+          <div class="field">
+            <label for="trimStart" data-i18n="trimStart">البداية (دقيقة:ثانية)</label>
+            <input id="trimStart" type="text" inputmode="decimal" placeholder="0:00" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="trimEnd" data-i18n="trimEnd">النهاية (اختياري)</label>
+            <input id="trimEnd" type="text" inputmode="decimal" placeholder="—" autocomplete="off">
+          </div>
+        </div>
+        <label class="check" id="muteField"><input id="avMute" type="checkbox"> <span data-i18n="mute">كتم الصوت</span></label>
+        <p id="avNote" class="soon" hidden></p>
+      </div>
+
+      <p id="engineStatus" class="soon" hidden></p>
 
       <div class="convert-row">
         <button id="convertBtn" class="btn btn-primary" disabled data-i18n="convert">تحويل</button>
+        <button id="cancelBtn" class="btn btn-ghost" hidden data-i18n="cancel">إلغاء</button>
         <button id="zipBtn" class="btn btn-ghost" hidden data-i18n="downloadZip">تنزيل الكل (ZIP)</button>
       </div>
       <p id="summary" class="summary" hidden></p>
@@ -96,6 +133,7 @@
 
   <script src="js/zip.js"></script>
   <script src="js/image.js"></script>
+  <script src="js/media.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -145,6 +145,14 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 44px
 .working { color: var(--accent); }
 .summary { margin: 10px 0 0; font-weight: 500; }
 .remove:disabled { opacity: .3; }
+.field input[type="text"] {
+  font: inherit; padding: 10px; min-height: 44px; border-radius: 10px; width: 100%;
+  border: 1px solid var(--line); background: var(--bg); color: var(--text); direction: ltr; text-align: center;
+}
+.field input.invalid { border-color: #dc2626; }
+.bar { height: 6px; border-radius: 99px; background: var(--accent-soft); overflow: hidden; margin-top: 4px; }
+.bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .2s; }
+html[dir="rtl"] .bar > span { margin-inline-start: 0; }
 
 [hidden] { display: none !important; }
 

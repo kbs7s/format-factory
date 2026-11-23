@@ -1,0 +1,8 @@
+These files come from ffmpeg.wasm (https://github.com/ffmpegwasm/ffmpeg.wasm):
+
+- ffmpeg.js, 814.ffmpeg.js: @ffmpeg/ffmpeg 0.12.15, MIT License.
+- ffmpeg-core.js, ffmpeg-core.wasm: @ffmpeg/core 0.12.10, GPL-2.0-or-later.
+  It is a WebAssembly build of FFmpeg (https://ffmpeg.org) with libx264, libvpx,
+  LAME, Vorbis, Opus and other libraries. Source code:
+  https://github.com/ffmpegwasm/ffmpeg.wasm/tree/v0.12.10
+  https://github.com/FFmpeg/FFmpeg

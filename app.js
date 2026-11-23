@@ -21,7 +21,26 @@ const I18N = {
     converting: 'جارٍ التحويل…',
     downloadZip: 'تنزيل الكل (ZIP)',
     download: 'تنزيل',
-    avSoon: 'تحويل الصوت والفيديو قادم في التحديث القادم.',
+    avSettings: 'إعدادات الفيديو والصوت',
+    resolution: 'الدقة',
+    bitrate: 'جودة الصوت',
+    trimStart: 'البداية (دقيقة:ثانية)',
+    trimEnd: 'النهاية (اختياري)',
+    mute: 'كتم الصوت',
+    cancel: 'إلغاء',
+    cancelled: 'تم الإلغاء',
+    groupVideo: 'فيديو', groupAudio: 'صوت',
+    vq: { high: 'عالية', medium: 'متوسطة', small: 'حجم صغير' },
+    engineLoading: (a, b) => `تحميل محرك الفيديو ${a} من ${b} (مرة واحدة فقط)`,
+    engineReady: 'محرك الفيديو جاهز',
+    engineFailed: 'تعذّر تحميل محرك الفيديو. تحقق من الإنترنت وحاول مجدداً.',
+    gifNote: (n) => `GIF يأخذ أول ${n} ثانية فقط (أو المقطع الذي تحدده).`,
+    audioOnlyNote: 'ملفات الصوت لا يمكن تحويلها إلى فيديو. اختر صيغة صوت.',
+    slowNote: 'تحويل الفيديو على الهاتف بطيء. أبقِ الصفحة مفتوحة حتى ينتهي.',
+    errTooBig: 'الملف كبير جداً للمتصفح (الحد 700 MB)',
+    errTrim: 'وقت القص غير صحيح',
+    errAudioToVideo: 'لا يمكن تحويل ملف صوت إلى فيديو',
+    errNoStream: 'لا يوجد صوت أو صورة مناسبة في هذا الملف',
     privacy: 'يعمل بالكامل داخل المتصفح، بدون خوادم وبدون رفع ملفات.',
     offlineReady: 'جاهز للعمل بدون إنترنت',
     iosTip: 'للتثبيت على iPhone: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»',
@@ -46,6 +65,15 @@ const I18N = {
       smallest: 'أصغر حجم ممكن',
       lossless: 'بدون فقدان جودة (PNG)',
     },
+    avPresets: {
+      custom: 'مخصص',
+      whatsapp: 'فيديو للواتساب (MP4 720p)',
+      smallvideo: 'فيديو صغير الحجم (480p)',
+      extract: 'استخراج الصوت MP3',
+      voice: 'رسالة صوتية إلى MP3',
+      gif: 'صورة متحركة GIF',
+      hq: 'صوت بجودة عالية (MP3 320)',
+    },
   },
   en: {
     appName: 'Format Factory',
@@ -66,7 +94,26 @@ const I18N = {
     converting: 'Converting…',
     downloadZip: 'Download all (ZIP)',
     download: 'Download',
-    avSoon: 'Audio and video conversion arrives in the next update.',
+    avSettings: 'Video and audio settings',
+    resolution: 'Resolution',
+    bitrate: 'Audio quality',
+    trimStart: 'Start (min:sec)',
+    trimEnd: 'End (optional)',
+    mute: 'Remove sound',
+    cancel: 'Cancel',
+    cancelled: 'Cancelled',
+    groupVideo: 'Video', groupAudio: 'Audio',
+    vq: { high: 'High', medium: 'Medium', small: 'Small file' },
+    engineLoading: (a, b) => `Downloading the video engine ${a} of ${b} (one time only)`,
+    engineReady: 'Video engine ready',
+    engineFailed: 'Could not load the video engine. Check your connection and try again.',
+    gifNote: (n) => `GIF uses only the first ${n} seconds (or the part you trim).`,
+    audioOnlyNote: 'Audio files can’t become video. Pick an audio format.',
+    slowNote: 'Video conversion is slow on phones. Keep this page open until it finishes.',
+    errTooBig: 'Too big for the browser (limit 700 MB)',
+    errTrim: 'Trim times are not valid',
+    errAudioToVideo: 'An audio file can’t become a video',
+    errNoStream: 'This file has no usable audio or video',
     privacy: 'Runs fully in your browser. No servers, no uploads.',
     offlineReady: 'Ready to work offline',
     iosTip: 'To install on iPhone: tap Share, then “Add to Home Screen”',
@@ -91,6 +138,15 @@ const I18N = {
       smallest: 'Smallest possible',
       lossless: 'Lossless (PNG)',
     },
+    avPresets: {
+      custom: 'Custom',
+      whatsapp: 'WhatsApp video (MP4 720p)',
+      smallvideo: 'Small video (480p)',
+      extract: 'Extract audio as MP3',
+      voice: 'Voice note to MP3',
+      gif: 'Animated GIF',
+      hq: 'High quality audio (MP3 320)',
+    },
   },
 };
 
@@ -103,6 +159,17 @@ const PRESETS = {
   smallest: { format: 'WEBP', maxSide: 1280, quality: 60, target: 200 * 1024, square: false },
   lossless: { format: 'PNG', maxSide: 0, quality: 100, target: 0, square: false },
 };
+const AV_PRESETS = {
+  custom: null,
+  whatsapp: { format: 'MP4', resolution: 720, quality: 'medium', bitrate: 128, mute: false },
+  smallvideo: { format: 'MP4', resolution: 480, quality: 'small', bitrate: 96, mute: false },
+  extract: { format: 'MP3', resolution: 0, quality: 'medium', bitrate: 192, mute: false },
+  voice: { format: 'MP3', resolution: 0, quality: 'medium', bitrate: 96, mute: false },
+  gif: { format: 'GIF', resolution: 480, quality: 'medium', bitrate: 128, mute: false },
+  hq: { format: 'MP3', resolution: 0, quality: 'high', bitrate: 320, mute: false },
+};
+const RESOLUTIONS = [0, 1080, 720, 480, 360];
+const BITRATES = [320, 256, 192, 128, 96, 64];
 const SIZES = [0, 4000, 2560, 1920, 1600, 1280, 1080, 800, 512];
 const TARGETS = [0, 2048, 1024, 500, 200, 100].map((kb) => kb * 1024);
 const ICONS = { image: '🖼️', audio: '🎵', video: '🎬' };
@@ -119,6 +186,8 @@ let files = []; // { id, file, kind, thumb, status, result, error }
 let nextId = 1;
 let busy = false;
 let encoders = { JPG: true, PNG: true, WEBP: true, AVIF: false };
+let cancelRequested = false;
+let engineMsg = '';
 
 const $ = (id) => document.getElementById(id);
 const t = (key) => (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
@@ -185,6 +254,74 @@ $('targetSelect').addEventListener('change', (e) => onSettingChange({ target: Nu
 $('quality').addEventListener('input', (e) => { $('qualityOut').textContent = e.target.value; });
 $('quality').addEventListener('change', (e) => onSettingChange({ quality: Number(e.target.value) }));
 $('squareCrop').addEventListener('change', (e) => onSettingChange({ square: e.target.checked }));
+
+// ---------- Audio / video settings ----------
+const AV_DEFAULTS = { preset: 'custom', format: 'MP4', resolution: 0, quality: 'medium', bitrate: 192, mute: false, start: '', end: '' };
+function loadAv() {
+  try { return Object.assign({}, AV_DEFAULTS, JSON.parse(store.get('avSettings') || '{}'), { start: '', end: '' }); } catch { return Object.assign({}, AV_DEFAULTS); }
+}
+let av = loadAv();
+function saveAv() { const { start, end, ...rest } = av; store.set('avSettings', JSON.stringify(rest)); }
+
+function renderAvSettings() {
+  const onlyAudio = files.length && files.every((f) => f.kind !== 'video');
+  fillSelect($('avPreset'), Object.keys(AV_PRESETS).map((k) => [k, t('avPresets')[k]]));
+  const sel = $('avFormat');
+  const prev = av.format;
+  sel.replaceChildren();
+  [['groupVideo', FFMedia.VIDEO_OUT], ['groupAudio', FFMedia.AUDIO_OUT]].forEach(([label, list]) => {
+    const og = document.createElement('optgroup');
+    og.label = t(label);
+    list.forEach((f) => og.append(new Option(f, f)));
+    sel.append(og);
+  });
+  sel.value = prev;
+  fillSelect($('avRes'), RESOLUTIONS.map((r) => [r, r ? ltr(`${r}p`) : t('original')]));
+  fillSelect($('avQuality'), ['high', 'medium', 'small'].map((q) => [q, t('vq')[q]]));
+  fillSelect($('avBitrate'), BITRATES.map((b) => [b, ltr(`${b} kbps`)]));
+
+  $('avPreset').value = av.preset;
+  $('avRes').value = String(av.resolution);
+  $('avQuality').value = av.quality;
+  $('avBitrate').value = String(av.bitrate);
+  $('avMute').checked = av.mute;
+  if (document.activeElement !== $('trimStart')) $('trimStart').value = av.start;
+  if (document.activeElement !== $('trimEnd')) $('trimEnd').value = av.end;
+
+  const isVideoOut = FFMedia.VIDEO_OUT.includes(av.format);
+  $('resField').hidden = !isVideoOut;
+  $('vqField').hidden = !isVideoOut || av.format === 'GIF';
+  $('brField').hidden = !FFMedia.LOSSY_AUDIO.has(av.format);
+  $('muteField').hidden = !isVideoOut || av.format === 'GIF';
+
+  const notes = [];
+  if (isVideoOut && onlyAudio) notes.push(t('audioOnlyNote'));
+  if (av.format === 'GIF') notes.push(t('gifNote')(FFMedia.GIF_MAX_SECONDS));
+  if (files.some((f) => f.kind === 'video') && isVideoOut) notes.push(t('slowNote'));
+  $('avNote').textContent = notes.join(' ');
+  $('avNote').hidden = !notes.length;
+
+  const s = FFMedia.parseTime(av.start); const e = FFMedia.parseTime(av.end);
+  $('trimStart').classList.toggle('invalid', Number.isNaN(s));
+  $('trimEnd').classList.toggle('invalid', Number.isNaN(e) || (s != null && e != null && e <= s));
+}
+
+function onAvChange(patch, keepPreset) {
+  Object.assign(av, patch);
+  if (!keepPreset) av.preset = 'custom';
+  saveAv(); renderAvSettings(); markStale(); updateConvertBtn();
+}
+$('avPreset').addEventListener('change', (e) => {
+  const p = AV_PRESETS[e.target.value];
+  onAvChange(Object.assign({ preset: e.target.value }, p || {}), true);
+});
+$('avFormat').addEventListener('change', (e) => onAvChange({ format: e.target.value }));
+$('avRes').addEventListener('change', (e) => onAvChange({ resolution: Number(e.target.value) }));
+$('avQuality').addEventListener('change', (e) => onAvChange({ quality: e.target.value }));
+$('avBitrate').addEventListener('change', (e) => onAvChange({ bitrate: Number(e.target.value) }));
+$('avMute').addEventListener('change', (e) => onAvChange({ mute: e.target.checked }));
+$('trimStart').addEventListener('input', (e) => onAvChange({ start: e.target.value }, true));
+$('trimEnd').addEventListener('input', (e) => onAvChange({ end: e.target.value }, true));
 
 // ---------- Language ----------
 function applyLang() {
@@ -267,7 +404,11 @@ function render() {
   $('count').textContent = files.length;
   const hasImages = files.some((f) => f.kind === 'image');
   $('imgOptions').hidden = !hasImages;
-  $('avNote').hidden = !files.some((f) => f.kind !== 'image');
+  $('avOptions').hidden = !files.some((f) => f.kind !== 'image');
+  renderAvSettings();
+  $('engineStatus').textContent = engineMsg;
+  $('engineStatus').hidden = !engineMsg;
+  $('cancelBtn').hidden = !busy;
 
   const ul = $('fileList');
   ul.replaceChildren();
@@ -276,9 +417,10 @@ function render() {
     li.className = 'file';
 
     let thumb;
-    if (f.thumb || (f.result && f.result.url)) {
+    const resultImg = f.result && f.result.url && /^image\//.test(f.result.blob.type) ? f.result.url : null;
+    if (f.thumb || resultImg) {
       thumb = document.createElement('img');
-      thumb.src = (f.result && f.result.url) || f.thumb;
+      thumb.src = resultImg || f.thumb;
       thumb.alt = '';
     } else {
       thumb = document.createElement('div');
@@ -300,8 +442,17 @@ function render() {
     if (f.status === 'working') {
       const s = document.createElement('p');
       s.className = 'sub working';
-      s.textContent = t('converting');
+      s.textContent = f.progress != null ? `${t('converting')} ${ltr(Math.round(f.progress * 100) + '%')}` : t('converting');
       meta.append(s);
+      if (f.kind !== 'image') {
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        const fill = document.createElement('span');
+        fill.style.width = `${Math.round((f.progress || 0) * 100)}%`;
+        bar.append(fill);
+        meta.append(bar);
+        f.ui = { text: s, fill };
+      }
     } else if (f.error) {
       const s = document.createElement('p');
       s.className = 'sub err';
@@ -314,10 +465,13 @@ function render() {
       s.className = 'sub result';
       const change = pct >= 0 ? `−${pct}%` : `+${-pct}%`;
       s.textContent = `${lang === 'ar' ? '←' : '→'} ${ltr(`${r.name} · ${formatSize(r.blob.size)} (${change})`)}`;
-      const dims = document.createElement('p');
-      dims.className = 'sub';
-      dims.textContent = ltr(`${r.width}×${r.height}`);
-      meta.append(s, dims);
+      meta.append(s);
+      if (r.width) {
+        const dims = document.createElement('p');
+        dims.className = 'sub';
+        dims.textContent = ltr(`${r.width}×${r.height}`);
+        meta.append(dims);
+      }
     }
 
     li.append(thumb, meta);
@@ -357,46 +511,109 @@ function render() {
 
 function updateConvertBtn() {
   const btn = $('convertBtn');
-  btn.disabled = busy || !files.some((f) => f.kind === 'image') || !encoders[settings.format];
+  const canImg = files.some((f) => f.kind === 'image') && encoders[settings.format];
+  const canAv = files.some((f) => f.kind !== 'image') && avTrimValid();
+  btn.disabled = busy || !(canImg || canAv);
+}
+
+function avTrimValid() {
+  const s = FFMedia.parseTime(av.start); const e = FFMedia.parseTime(av.end);
+  return !Number.isNaN(s) && !Number.isNaN(e) && !(s != null && e != null && e <= s);
+}
+
+const ERRORS = { 'too-big': 'errTooBig', 'bad-trim': 'errTrim', 'audio-to-video': 'errAudioToVideo', 'no-stream': 'errNoStream' };
+
+async function ensureEngine() {
+  if (FFMedia.isLoaded()) return;
+  engineMsg = t('engineLoading')(ltr('0 MB'), ltr('31 MB'));
+  render();
+  try {
+    await FFMedia.load((got, total) => {
+      engineMsg = t('engineLoading')(ltr(formatSize(got)), ltr(formatSize(total)));
+      $('engineStatus').textContent = engineMsg;
+      $('engineStatus').hidden = false;
+    });
+    engineMsg = '';
+  } catch (err) {
+    engineMsg = t('engineFailed');
+    throw err;
+  } finally {
+    render();
+  }
+}
+
+function setProgress(f, p) {
+  f.progress = p;
+  if (f.ui) {
+    f.ui.fill.style.width = `${Math.round(p * 100)}%`;
+    f.ui.text.textContent = `${t('converting')} ${ltr(Math.round(p * 100) + '%')}`;
+  }
 }
 
 // ---------- Convert ----------
 async function convertAll() {
   if (busy) return;
   busy = true;
+  cancelRequested = false;
   $('convertBtn').textContent = t('converting');
-  const opts = {
+  const imgOpts = {
     format: settings.format,
     quality: settings.quality / 100,
     maxSide: settings.maxSide,
     targetBytes: settings.target,
     square: settings.square,
   };
-  const todo = files.filter((f) => f.kind === 'image');
-  todo.forEach((f) => { revokeResult(f); f.error = null; f.status = 'waiting'; });
+  const avOpts = {
+    format: av.format, resolution: av.resolution, quality: av.quality, bitrate: av.bitrate, mute: av.mute,
+    start: FFMedia.parseTime(av.start), end: FFMedia.parseTime(av.end),
+  };
+  const todo = files.filter((f) => (f.kind === 'image' ? encoders[settings.format] : avTrimValid()));
+  todo.forEach((f) => { revokeResult(f); f.error = null; f.status = 'waiting'; f.progress = null; });
   render();
 
   for (const f of todo) {
+    if (cancelRequested) break;
     if (!files.includes(f)) continue;
     f.status = 'working';
+    f.ui = null;
     render();
     try {
-      const r = await FFImage.convert(f.file, opts);
+      let r;
+      if (f.kind === 'image') {
+        r = await FFImage.convert(f.file, imgOpts);
+      } else {
+        await ensureEngine();
+        f.progress = 0;
+        render();
+        r = await FFMedia.convert(f.file, f.kind, avOpts, (p) => setProgress(f, p));
+      }
       r.url = URL.createObjectURL(r.blob);
       f.result = r;
     } catch (err) {
-      console.error(err);
-      f.error = FFImage.isHeic(f.file) ? t('heicFailed') : t('failed');
+      if (cancelRequested) {
+        f.error = t('cancelled');
+      } else {
+        console.error(err);
+        const key = ERRORS[err && err.message];
+        f.error = key ? t(key) : (FFImage.isHeic(f.file) ? t('heicFailed') : t('failed'));
+      }
     }
     f.status = 'idle';
+    f.ui = null;
     render();
     await new Promise((res) => setTimeout(res, 0)); // let the UI breathe
   }
+  todo.forEach((f) => { if (f.status === 'waiting') { f.status = 'idle'; if (cancelRequested) f.error = t('cancelled'); } });
 
   busy = false;
   $('convertBtn').textContent = t('convert');
   render();
 }
+$('cancelBtn').addEventListener('click', () => {
+  if (!busy) return;
+  cancelRequested = true;
+  FFMedia.cancel(); // stops a running audio/video job right away
+});
 $('convertBtn').addEventListener('click', convertAll);
 
 $('zipBtn').addEventListener('click', async () => {
