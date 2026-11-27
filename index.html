@@ -14,9 +14,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Format Factory">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="fonts/fonts.css">
   <link rel="stylesheet" href="styles.css">
   <script>try{var th=localStorage.getItem('ffTheme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=th;}catch(e){}</script>
 </head>
@@ -175,6 +173,45 @@
           <h3 data-i18n="feat3Title">مقارنة قبل وبعد + ZIP</h3>
           <p data-i18n="feat3Desc">عاين الفرق بسلايدر تفاعلي قبل التنزيل، أو نزّل جميع الملفات دفعة واحدة بملف ZIP.</p>
         </article>
+      </section>
+
+      <!-- On this device: offline status + saved files -->
+      <section id="deviceCard" class="card device-card">
+        <div class="queue-head">
+          <div class="queue-title-group">
+            <h2 data-i18n="deviceTitle">على هذا الجهاز</h2>
+          </div>
+          <span id="storageUsage" class="pill pill-neutral" hidden></span>
+        </div>
+
+        <div class="offline-grid">
+          <div class="offline-item">
+            <span id="offShellDot" class="status-dot"></span>
+            <div class="offline-text">
+              <strong data-i18n="offImages">تحويل الصور</strong>
+              <span id="offShellText"></span>
+            </div>
+          </div>
+          <div class="offline-item">
+            <span id="offEngineDot" class="status-dot"></span>
+            <div class="offline-text">
+              <strong data-i18n="offVideo">الفيديو والصوت</strong>
+              <span id="offEngineText"></span>
+            </div>
+            <button id="offlineBtn" class="btn btn-soft btn-sm" type="button" hidden data-i18n="offDownload">تنزيل للعمل بدون إنترنت</button>
+          </div>
+        </div>
+
+        <div class="saved-head">
+          <div class="queue-title-group">
+            <h3 data-i18n="savedTitle">الملفات المحفوظة</h3>
+            <span id="savedCount" class="count-badge">0</span>
+          </div>
+          <label class="check"><input id="autoSave" type="checkbox"> <span data-i18n="autoSave">حفظ النتائج تلقائياً</span></label>
+          <button id="clearSavedBtn" class="btn btn-link btn-sm" type="button" hidden data-i18n="clearSaved">حذف الكل</button>
+        </div>
+        <p id="savedEmpty" class="info-banner soft" data-i18n="savedEmpty">الملفات المحوّلة تُحفظ هنا على جهازك فقط، وتبقى بعد إغلاق التطبيق.</p>
+        <ul id="savedList" class="files"></ul>
       </section>
     </div>
 
@@ -394,6 +431,7 @@
   <script src="js/zip.js"></script>
   <script src="js/image.js"></script>
   <script src="js/media.js"></script>
+  <script src="js/storage.js"></script>
   <script src="app.js"></script>
 
 </body>

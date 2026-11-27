@@ -1,7 +1,8 @@
 // Bump VERSION whenever app files change so phones pick up the update.
-const VERSION = 'ff-v4';
+const VERSION = 'ff-v5';
 // Big libraries (video engine ~31 MB, HEIC decoder) live in their own cache,
-// so an app update doesn't download them again. Bump only when lib/ changes.
+// so an app update doesn't download them again. Bump only when lib/ changes,
+// and keep it equal to LIB_CACHE in js/storage.js.
 const LIB_CACHE = 'ff-lib-ffmpeg0.12.10-heic0.0.4';
 const ASSETS = [
   './',
@@ -11,6 +12,11 @@ const ASSETS = [
   './js/zip.js',
   './js/image.js',
   './js/media.js',
+  './js/storage.js',
+  './fonts/fonts.css',
+  './fonts/cairo-arabic-wght-normal.woff2',
+  './fonts/cairo-latin-wght-normal.woff2',
+  './fonts/inter-latin-wght-normal.woff2',
   './manifest.webmanifest',
   './icons/icon.svg',
   './icons/icon-192.png',
@@ -20,8 +26,16 @@ const ASSETS = [
   './icons/favicon-32.png',
 ];
 
+// Small enough to keep ready for offline iPhone (HEIC) photos from the start.
+// The 31 MB video engine is cached on first use or via "Download for offline".
+const LIB_PRECACHE = ['./lib/heic2any.min.js'];
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(VERSION).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches.open(VERSION).then((c) => c.addAll(ASSETS))
+      .then(() => caches.open(LIB_CACHE).then((c) => c.addAll(LIB_PRECACHE)).catch(() => {}))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (event) => {

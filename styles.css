@@ -1079,3 +1079,27 @@ input.invalid { border-color: var(--err) !important; }
 }
 .ios-tip span { flex: 1; }
 .foot .ok { color: var(--ok); font-weight: 600; }
+
+/* ---------- On this device: offline + saved files ---------- */
+.device-card { padding: 16px 18px; }
+.device-card h3 { font-size: .95rem; font-weight: 800; margin: 0; }
+.offline-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 12px 0 16px; }
+.offline-item {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2);
+}
+.offline-item .btn { width: 100%; }
+.offline-text { display: flex; flex-direction: column; min-width: 0; flex: 1; font-size: .82rem; color: var(--muted); line-height: 1.35; }
+.offline-text strong { color: var(--text); font-size: .88rem; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--line-strong); }
+.status-dot.ok { background: var(--ok); box-shadow: 0 0 0 4px var(--ok-soft); }
+.status-dot.warn { background: var(--warn); box-shadow: 0 0 0 4px var(--warn-soft); }
+.status-dot.busy { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); animation: ffPulse 1s ease-in-out infinite; }
+@keyframes ffPulse { 50% { opacity: .35; } }
+.saved-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.saved-head .queue-title-group { flex: 1; }
+.saved-head .check { min-height: 32px; font-size: .82rem; }
+.btn-danger-confirm { color: var(--err) !important; }
+@media (max-width: 640px) {
+  .offline-grid { grid-template-columns: minmax(0, 1fr); }
+}

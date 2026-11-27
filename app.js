@@ -38,6 +38,28 @@ const I18N = {
     compare: 'مقارنة',
     privacy: 'يعمل بالكامل داخل المتصفح، بدون خوادم وبدون رفع ملفات.',
     install: 'تثبيت التطبيق',
+    deviceTitle: 'على هذا الجهاز',
+    offImages: 'تحويل الصور',
+    offVideo: 'الفيديو والصوت',
+    offReady: 'يعمل بدون إنترنت',
+    offNeedsNet: 'يحتاج إنترنت مرة واحدة',
+    offUnsupported: 'متصفحك لا يدعم العمل بدون إنترنت',
+    offDownload: 'تنزيل للعمل بدون إنترنت (31 MB)',
+    offDownloading: (a, b) => `جارٍ التنزيل ${a} من ${b}`,
+    offDone: 'أصبح الفيديو والصوت يعملان بدون إنترنت',
+    offFailed: 'تعذّر التنزيل. تحقق من الإنترنت وحاول مجدداً.',
+    savedTitle: 'الملفات المحفوظة',
+    autoSave: 'حفظ النتائج تلقائياً',
+    clearSaved: 'حذف الكل',
+    clearSavedConfirm: 'اضغط مجدداً للتأكيد',
+    savedEmpty: 'الملفات المحوّلة تُحفظ هنا على جهازك فقط، وتبقى بعد إغلاق التطبيق.',
+    save: 'حفظ',
+    saved: 'محفوظ',
+    delete: 'حذف',
+    savedToast: 'تم الحفظ على جهازك',
+    storageFull: 'مساحة التخزين ممتلئة. احذف بعض الملفات المحفوظة.',
+    storageFailed: 'تعذّر الحفظ على هذا الجهاز',
+    storageUsed: (a, b) => `مستخدم ${a} من ${b}`,
     offlineReady: 'جاهز للعمل بدون إنترنت',
     iosTip: 'للتثبيت على iPhone: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»',
     avPresetSection: 'جاهز للفيديو والصوت',
@@ -148,6 +170,28 @@ const I18N = {
     compare: 'Compare',
     privacy: 'Runs completely in your browser. No servers, no uploads.',
     install: 'Install app',
+    deviceTitle: 'On this device',
+    offImages: 'Image conversion',
+    offVideo: 'Video & audio',
+    offReady: 'Works offline',
+    offNeedsNet: 'Needs internet once',
+    offUnsupported: 'This browser can’t work offline',
+    offDownload: 'Download for offline use (31 MB)',
+    offDownloading: (a, b) => `Downloading ${a} of ${b}`,
+    offDone: 'Video and audio now work offline',
+    offFailed: 'Download failed. Check your connection and try again.',
+    savedTitle: 'Saved files',
+    autoSave: 'Save results automatically',
+    clearSaved: 'Delete all',
+    clearSavedConfirm: 'Tap again to confirm',
+    savedEmpty: 'Converted files are kept here on your device only, even after you close the app.',
+    save: 'Save',
+    saved: 'Saved',
+    delete: 'Delete',
+    savedToast: 'Saved on your device',
+    storageFull: 'Storage is full. Delete some saved files.',
+    storageFailed: 'Could not save on this device',
+    storageUsed: (a, b) => `${a} used of ${b}`,
     offlineReady: 'Ready to work offline',
     iosTip: 'To install on iPhone: tap Share, then “Add to Home Screen”',
     avPresetSection: 'Video & audio presets',
@@ -571,6 +615,7 @@ function applyLang() {
   renderSettings();
   renderAvSettings();
   render();
+  if (typeof renderSaved === 'function' && window.FFStore) { renderSaved(); renderOffline(); }
 }
 $('langBtn').addEventListener('click', () => {
   lang = lang === 'ar' ? 'en' : 'ar';
@@ -594,6 +639,7 @@ function kindOf(file) {
 function revokeResult(f) {
   if (f.result && f.result.url) URL.revokeObjectURL(f.result.url);
   f.result = null;
+  f.savedId = null;
 }
 
 function addFiles(list) {
@@ -809,6 +855,13 @@ function render() {
       actions.append(cmpBtn);
     }
     if (f.result) {
+      const sv = document.createElement('button');
+      sv.type = 'button';
+      sv.className = 'btn btn-ghost btn-sm';
+      sv.textContent = f.savedId ? `✓ ${t('saved')}` : t('save');
+      sv.disabled = !!f.savedId || !!f.saving;
+      sv.addEventListener('click', () => saveResult(f, true));
+      actions.append(sv);
       const dl = document.createElement('a');
       dl.className = 'btn btn-soft btn-sm';
       dl.href = f.result.url;
@@ -929,6 +982,8 @@ async function convertAll() {
       }
       r.url = URL.createObjectURL(r.blob);
       f.result = r;
+      f.savedId = null;
+      if (autoSave) saveResult(f, false);
     } catch (err) {
       if (cancelRequested) {
         f.error = t('cancelled');
@@ -950,6 +1005,7 @@ async function convertAll() {
   busy = false;
   setTimeout(() => { if (!busy) $('progressWrap').hidden = true; }, 900);
   render();
+  setTimeout(renderOffline, 1500);
 }
 $('cancelBtn').addEventListener('click', () => {
   if (!busy) return;
@@ -1055,6 +1111,192 @@ function toast(msg) {
   setTimeout(() => el.remove(), 3200);
 }
 
+// ---------- On this device: saved files + offline ----------
+let autoSave = store.get('ffAutoSave') !== '0';
+let savedUrls = [];
+let engineDl = null; // { got, total } while downloading
+let clearArmed = null;
+
+async function saveResult(f, manual) {
+  if (!f.result || f.savedId || f.saving) return;
+  f.saving = true;
+  try {
+    const r = f.result;
+    f.savedId = await FFStore.saveFile({
+      name: r.name, origName: f.file.name, kind: f.kind,
+      size: r.blob.size, origSize: f.file.size,
+      width: r.width || 0, height: r.height || 0,
+      type: r.blob.type, blob: r.blob,
+    });
+    FFStore.persist();
+    if (manual) toast(t('savedToast'));
+  } catch (err) {
+    console.error(err);
+    const full = err && (err.name === 'QuotaExceededError' || /quota/i.test(String(err.message)));
+    toast(full ? t('storageFull') : t('storageFailed'));
+  } finally {
+    f.saving = false;
+    render();
+    renderSaved();
+  }
+}
+
+function fmtDate(ms) {
+  try {
+    return new Intl.DateTimeFormat(lang === 'ar' ? 'ar' : 'en', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(ms));
+  } catch { return new Date(ms).toLocaleString(); }
+}
+
+function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+let savedRenderSeq = 0;
+async function renderSaved() {
+  const seq = ++savedRenderSeq;
+  let items = [];
+  try { items = await FFStore.listFiles(); } catch { items = []; }
+  if (seq !== savedRenderSeq) return;
+  savedUrls.forEach((u) => URL.revokeObjectURL(u));
+  savedUrls = [];
+
+  $('savedCount').textContent = items.length;
+  $('savedEmpty').hidden = items.length > 0;
+  $('clearSavedBtn').hidden = items.length === 0;
+  $('autoSave').checked = autoSave;
+
+  const ul = $('savedList');
+  ul.replaceChildren();
+  for (const it of items) {
+    const li = document.createElement('li');
+    li.className = 'file-card done';
+    const thumbWrap = document.createElement('div');
+    thumbWrap.className = 'thumb-wrap';
+    if (/^image\//.test(it.type || '') && it.blob) {
+      const img = document.createElement('img');
+      const u = URL.createObjectURL(it.blob);
+      savedUrls.push(u);
+      img.src = u; img.alt = '';
+      thumbWrap.append(img);
+    } else {
+      thumbWrap.textContent = ICONS[it.kind] || '📄';
+    }
+    const meta = document.createElement('div');
+    meta.className = 'file-meta';
+    const name = document.createElement('p');
+    name.className = 'file-name';
+    name.textContent = it.name;
+    name.title = it.origName || it.name;
+    const sub = document.createElement('div');
+    sub.className = 'file-sub';
+    const p1 = document.createElement('span');
+    p1.className = 'pill pill-neutral';
+    p1.textContent = `${t(it.kind)} · ${ltr(formatSize(it.size))}`;
+    const p2 = document.createElement('span');
+    p2.className = 'pill pill-neutral';
+    p2.textContent = fmtDate(it.date);
+    sub.append(p1, p2);
+    meta.append(name, sub);
+
+    const actions = document.createElement('div');
+    actions.className = 'file-actions';
+    const dl = document.createElement('button');
+    dl.type = 'button';
+    dl.className = 'btn btn-soft btn-sm';
+    dl.textContent = t('download');
+    dl.addEventListener('click', async () => {
+      const rec = await FFStore.getFile(it.id);
+      if (rec && rec.blob) downloadBlob(rec.blob, rec.name);
+    });
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'btn btn-link btn-sm';
+    del.textContent = '✕';
+    del.setAttribute('aria-label', `${t('delete')} ${it.name}`);
+    del.addEventListener('click', async () => {
+      await FFStore.deleteFile(it.id);
+      files.forEach((f) => { if (f.savedId === it.id) f.savedId = null; });
+      render();
+      renderSaved();
+    });
+    actions.append(dl, del);
+    li.append(thumbWrap, meta, actions);
+    ul.append(li);
+  }
+
+  const est = await FFStore.estimate();
+  if (est && est.usage != null && est.quota) {
+    $('storageUsage').textContent = t('storageUsed')(ltr(formatSize(est.usage)), ltr(formatSize(est.quota)));
+    $('storageUsage').hidden = false;
+  }
+}
+
+$('autoSave').addEventListener('change', (e) => {
+  autoSave = e.target.checked;
+  store.set('ffAutoSave', autoSave ? '1' : '0');
+});
+$('clearSavedBtn').addEventListener('click', async () => {
+  const btn = $('clearSavedBtn');
+  if (!clearArmed) {
+    btn.textContent = t('clearSavedConfirm');
+    btn.classList.add('btn-danger-confirm');
+    clearArmed = setTimeout(() => { clearArmed = null; btn.textContent = t('clearSaved'); btn.classList.remove('btn-danger-confirm'); }, 4000);
+    return;
+  }
+  clearTimeout(clearArmed); clearArmed = null;
+  btn.textContent = t('clearSaved');
+  btn.classList.remove('btn-danger-confirm');
+  await FFStore.clearFiles();
+  files.forEach((f) => { f.savedId = null; });
+  render();
+  renderSaved();
+});
+
+function setDot(el, state) { el.className = `status-dot${state ? ` ${state}` : ''}`; }
+
+async function renderOffline() {
+  const swOk = 'serviceWorker' in navigator && 'caches' in window;
+  const shell = swOk && await FFStore.shellCached();
+  setDot($('offShellDot'), shell ? 'ok' : 'warn');
+  $('offShellText').textContent = !swOk ? t('offUnsupported') : (shell ? t('offReady') : t('offNeedsNet'));
+
+  if (engineDl) {
+    setDot($('offEngineDot'), 'busy');
+    $('offEngineText').textContent = t('offDownloading')(ltr(formatSize(engineDl.got)), ltr(formatSize(engineDl.total)));
+    $('offlineBtn').hidden = true;
+    return;
+  }
+  const engine = swOk && await FFStore.engineCached();
+  setDot($('offEngineDot'), engine ? 'ok' : 'warn');
+  $('offEngineText').textContent = !swOk ? t('offUnsupported') : (engine ? t('offReady') : t('offNeedsNet'));
+  $('offlineBtn').hidden = !swOk || engine;
+}
+
+$('offlineBtn').addEventListener('click', async () => {
+  if (engineDl) return;
+  engineDl = { got: 0, total: FFStore.ENGINE_TOTAL };
+  renderOffline();
+  try {
+    await FFStore.downloadEngine((got, total) => {
+      engineDl = { got, total };
+      $('offEngineText').textContent = t('offDownloading')(ltr(formatSize(got)), ltr(formatSize(total)));
+    });
+    FFStore.persist();
+    toast(t('offDone'));
+  } catch (err) {
+    console.error(err);
+    toast(t('offFailed'));
+  } finally {
+    engineDl = null;
+    renderOffline();
+    renderSaved();
+  }
+});
+
 // ---------- Install (PWA) ----------
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -1085,7 +1327,7 @@ $('iosTipClose').addEventListener('click', () => {
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready)
-      .then(() => { $('offlineNote').hidden = false; })
+      .then(() => { $('offlineNote').hidden = false; setTimeout(renderOffline, 500); })
       .catch(() => { /* offline support unavailable */ });
   });
 }
@@ -1098,3 +1340,5 @@ FFImage.detectEncoders().then((enc) => {
   if (!encoders[settings.format]) settings.format = encoders.WEBP ? 'WEBP' : 'JPG';
   renderSettings();
 });
+renderSaved();
+renderOffline();
